@@ -1,0 +1,119 @@
+/*! elementor-pro - v3.33.0 - 10-01-2026 */
+.elementor-widget-countdown .elementor-countdown-expire--message {
+  display: none;
+  padding: 20px;
+  text-align: center;
+}
+.elementor-widget-countdown .elementor-countdown-wrapper {
+  flex-direction: row;
+}
+.elementor-widget-countdown .elementor-countdown-item {
+  color: #fff;
+  padding: 20px 0;
+  text-align: center;
+}
+.elementor-widget-countdown .elementor-countdown-digits,
+.elementor-widget-countdown .elementor-countdown-label {
+  line-height: 1;
+}
+.elementor-widget-countdown .elementor-countdown-digits {
+  font-size: 69px;
+}
+.elementor-widget-countdown .elementor-countdown-label {
+  font-size: 19px;
+}
+.elementor-widget-countdown.elementor-countdown--label-block .elementor-countdown-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+.elementor-widget-countdown.elementor-countdown--label-block .elementor-countdown-digits,
+.elementor-widget-countdown.elementor-countdown--label-block .elementor-countdown-label {
+  display: block;
+}
+.elementor-widget-countdown.elementor-countdown--label-block .elementor-countdown-item {
+  flex-basis: 0;
+  flex-grow: 1;
+}
+.elementor-widget-countdown.elementor-countdown--label-inline {
+  text-align: center;
+}
+.elementor-widget-countdown.elementor-countdown--label-inline .elementor-countdown-item {
+  display: inline-block;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+<style>
+  .confirm-button {
+    background: linear-gradient(135deg, #d8bfa5, #c49b7a);
+    color: #fff;
+    padding: 14px 32px;
+    border: none;
+    border-radius: 40px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    letter-spacing: 0.5px;
+  }
+
+  .confirm-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    background: linear-gradient(135deg, #c49b7a, #ad8b6b);
+  }
+
+  .confirm-button:disabled {
+    background: #bdbdbd;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+  <style>
+.elementor-button-disabled {
+  opacity: 0.5;
+  filter: grayscale(60%);
+}
+<style>
+  /* Botón dorado estilo Elementor */
+  #btn-confirmar.elementor-button {
+    background-color: #C7A17A;   /* tono dorado real */
+    color: #fff;
+    border-radius: 50px;
+    padding: 14px 28px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  #btn-confirmar.elementor-button:hover {
+    background-color: #b38c66;
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+  }
+
+  /* Botón gris elegante */
+  #btn-no-asistir.elementor-button {
+    background-color: #999999; 
+    color: #fff;
+    border-radius: 50px;
+    padding: 14px 28px;
+    transition: all 0.3s ease;
+  }
+
+  #btn-no-asistir.elementor-button:hover {
+    background-color: #7a7a7a;
+    transform: scale(1.05);
+  }
+
+  /* Estilo desactivado */
+  .elementor-button-disabled {
+    opacity: 0.5 !important;
+    filter: grayscale(60%);
+    pointer-events: none;
+  }
+</style>
+</style>
+</style>
