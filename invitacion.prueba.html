@@ -3102,11 +3102,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // 3. Poner textos personalizados
   saludoEl.textContent = `Hola, ${nombre}.`;
-  accesosEl.textContent =
-    accesos === 1
-      ? "Esta invitación es válida para 1 acceso."
-      : `Esta invitación es válida para ${accesos} accesos.`;
-
+accesosEl.textContent =
+  accesos === "1"
+    ? "Esta invitación es válida para 1 acceso."
+    : `Esta invitación es válida para ${accesos} accesos.`;
   // ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐
   // 4. EVENTO: CONFIRMAR ASISTENCIA
   // ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐
