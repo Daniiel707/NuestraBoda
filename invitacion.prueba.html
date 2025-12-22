@@ -3159,53 +3159,85 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>	
 
 <script>
-window.addEventListener('DOMContentLoaded', () => {
-
   // Leer parámetros del link
   const params = new URLSearchParams(window.location.search);
   const nombre = params.get('nombre') || 'Invitado';
   const cupos  = params.get('cupos')  || '1';
 
-  // Mostrar en la página
-  const saludo  = document.getElementById('rsvp-saludo');
-  const accesos = document.getElementById('rsvp-accesos');
+  // Llave única por invitación (por link)
+  const rsvpKey = 'rsvp_' + btoa(unescape(encodeURIComponent(window.location.search || nombre + '|' + cupos)));
+
+  // Elementos
+  const saludo   = document.getElementById('rsvp-saludo');
+  const accesos  = document.getElementById('rsvp-accesos');
+  const mensaje  = document.getElementById('rsvp-mensaje');
+  const btnSi    = document.getElementById('btn-confirmar');
+  const btnNo    = document.getElementById('btn-no-asistir');
 
   if (saludo)  saludo.textContent  = `Hola ${nombre},`;
   if (accesos) accesos.textContent = `Tienes ${cupos} acceso(s) reservado(s).`;
 
-  // BOTONES (ahora sí existen)
-  document.getElementById('btn-confirmar')?.addEventListener('click', () => {
-    enviarRespuesta('CONFIRMA');
-  });
-
-  document.getElementById('btn-no-asistir')?.addEventListener('click', () => {
-    enviarRespuesta('NO ASISTE');
-  });
-
-  async function enviarRespuesta(respuesta) {
-    try {
-      const res = await fetch('https://script.google.com/macros/s/AKfycbzCVfQGCYCjQd41lPNXpE4zH_IbnfnAB8PsbG_o1-CBvX747mHan0OtQkiyYFjFLsaO/exec', {
-        method: 'POST',
-        body: new URLSearchParams({
-          nombre,
-          cupos,
-          respuesta
-        })
-      });
-
-      document.getElementById('rsvp-mensaje').textContent =
-        respuesta === 'CONFIRMA'
-          ? 'Gracias por confirmar tu asistencia 💛'
-          : 'Gracias por avisarnos 💛';
-
-    } catch (err) {
-      console.error(err);
-      document.getElementById('rsvp-mensaje').textContent =
-        'Ups, no se pudo registrar. Intenta de nuevo.';
+  function bloquearBotones() {
+    if (btnSi) {
+      btnSi.style.pointerEvents = 'none';
+      btnSi.style.opacity = '0.6';
+    }
+    if (btnNo) {
+      btnNo.style.pointerEvents = 'none';
+      btnNo.style.opacity = '0.6';
     }
   }
 
-});
+  function marcarSeleccion(respuesta) {
+    if (btnSi && btnNo) {
+      if (respuesta === 'CONFIRMA') {
+        btnSi.style.outline = '2px solid rgba(255,255,255,0.8)';
+        btnNo.style.outline = 'none';
+      } else {
+        btnNo.style.outline = '2px solid rgba(255,255,255,0.8)';
+        btnSi.style.outline = 'none';
+      }
+    }
+  }
+
+  // Si ya votó antes
+  const yaVoto = localStorage.getItem(rsvpKey);
+  if (yaVoto) {
+    bloquearBotones();
+    marcarSeleccion(yaVoto);
+    if (mensaje) {
+      mensaje.textContent =
+        yaVoto === 'CONFIRMA'
+          ? 'Ya confirmaste tu asistencia 💛'
+          : 'Ya registraste que no podrás asistir 💛';
+    }
+  }
+
+  // Botones
+  btnSi?.addEventListener('click', () => enviarRespuesta('CONFIRMA'));
+  btnNo?.addEventListener('click', () => enviarRespuesta('NO ASISTE'));
+
+  function enviarRespuesta(respuesta) {
+    if (localStorage.getItem(rsvpKey)) return;
+
+    localStorage.setItem(rsvpKey, respuesta);
+    bloquearBotones();
+    marcarSeleccion(respuesta);
+
+    fetch('https://script.google.com/macros/s/AKfycbzCVfQGCYCjQd41lPNXpE4zH_IbnfnAB8PsbG_o1-CBvX747mHan0OtQkiyYFjFLsaO/exec', {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre, cupos, respuesta })
+    });
+
+    if (mensaje) {
+      mensaje.textContent =
+        respuesta === 'CONFIRMA'
+          ? 'Gracias por confirmar tu asistencia 💛'
+          : 'Gracias por avisarnos 💛';
+    }
+  }
 </script>
 </body>
 </html>
