@@ -3159,25 +3159,22 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>	
 
-						<script>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+
   // Leer parámetros del link
   const params = new URLSearchParams(window.location.search);
   const nombre = params.get('nombre') || 'Invitado';
-  const cupos = params.get('cupos') || '1';
+  const cupos  = params.get('cupos')  || '1';
 
   // Mostrar en la página
-  const saludo = document.getElementById('rsvp-saludo');
+  const saludo  = document.getElementById('rsvp-saludo');
   const accesos = document.getElementById('rsvp-accesos');
 
-  if (saludo) {
-    saludo.textContent = `Hola ${nombre},`;
-  }
+  if (saludo)  saludo.textContent  = `Hola ${nombre},`;
+  if (accesos) accesos.textContent = `Tienes ${cupos} acceso(s) reservado(s).`;
 
-  if (accesos) {
-    accesos.textContent = `Tienes ${cupos} acceso(s) reservado(s).`;
-  }
-
-  // BOTONES
+  // BOTONES (ahora sí existen)
   document.getElementById('btn-confirmar')?.addEventListener('click', () => {
     enviarRespuesta('CONFIRMA');
   });
@@ -3186,22 +3183,30 @@ document.addEventListener("DOMContentLoaded", () => {
     enviarRespuesta('NO ASISTE');
   });
 
-  function enviarRespuesta(respuesta) {
-    fetch('https://script.google.com/macros/s/AKfycbyKhk3T728220Aa5O3plDzYAZ-ndlV88ANA-bx7EDh1CximRIrw2-0NKv33SIUsPhmO/exec', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        nombre: nombre,
-        cupos: cupos,
-        respuesta: respuesta
-      })
-    });
+  async function enviarRespuesta(respuesta) {
+    try {
+      const res = await fetch('https://script.google.com/macros/s/AKfycbyKhk3T728220Aa5O3plDzYAZ-ndlV88ANA-bx7EDh1CximRIrw2-0NKv33SIUsPhmO/exec', {
+        method: 'POST',
+        body: new URLSearchParams({
+          nombre,
+          cupos,
+          respuesta
+        })
+      });
 
-    document.getElementById('rsvp-mensaje').textContent =
-      respuesta === 'CONFIRMA'
-        ? 'Gracias por confirmar tu asistencia 💛'
-        : 'Gracias por avisarnos 💛';
+      document.getElementById('rsvp-mensaje').textContent =
+        respuesta === 'CONFIRMA'
+          ? 'Gracias por confirmar tu asistencia 💛'
+          : 'Gracias por avisarnos 💛';
+
+    } catch (err) {
+      console.error(err);
+      document.getElementById('rsvp-mensaje').textContent =
+        'Ups, no se pudo registrar. Intenta de nuevo.';
+    }
   }
+
+});
 </script>
 </body>
 </html>
