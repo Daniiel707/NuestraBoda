@@ -3158,24 +3158,52 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>	
 
 <script>
-  // Leer parámetros del link
+  // =========================
+  // 1. LEER PARÁMETROS DEL LINK
+  // =========================
   const params = new URLSearchParams(window.location.search);
+
   const nombre = params.get('nombre') || 'Invitado';
-  const cupos  = params.get('cupos')  || '1';
+  const accesosValor = Number(params.get('accesos')) || 1;
 
-  // Llave única por invitación (por link)
-  const rsvpKey = 'rsvp_' + btoa(unescape(encodeURIComponent(window.location.search || nombre + '|' + cupos)));
+  // =========================
+  // 2. LLAVE ÚNICA POR LINK
+  // (para que solo puedan votar una vez)
+  // =========================
+  const rsvpKey = 'rsvp_' + btoa(
+    unescape(
+      encodeURIComponent(
+        window.location.search || `${nombre}|${accesosValor}`
+      )
+    )
+  );
 
-  // Elementos
-  const saludo   = document.getElementById('rsvp-saludo');
-  const accesos  = document.getElementById('rsvp-accesos');
-  const mensaje  = document.getElementById('rsvp-mensaje');
-  const btnSi    = document.getElementById('btn-confirmar');
-  const btnNo    = document.getElementById('btn-no-asistir');
+  // =========================
+  // 3. ELEMENTOS DEL DOM
+  // =========================
+  const saludoEl  = document.getElementById('rsvp-saludo');
+  const accesosEl = document.getElementById('rsvp-accesos');
+  const mensajeEl = document.getElementById('rsvp-mensaje');
+  const btnSi     = document.getElementById('btn-confirmar');
+  const btnNo     = document.getElementById('btn-no-asistir');
 
-  if (saludo)  saludo.textContent  = `Hola ${nombre},`;
-  if (accesos) accesos.textContent = `Tienes ${cupos} acceso(s) reservado(s).`;
+  // =========================
+  // 4. MOSTRAR TEXTO PERSONALIZADO
+  // =========================
+  if (saludoEl) {
+    saludoEl.textContent = `Hola ${nombre},`;
+  }
 
+  if (accesosEl) {
+    accesosEl.textContent =
+      accesosValor === 1
+        ? 'Esta invitación es válida para 1 acceso.'
+        : `Esta invitación es válida para ${accesosValor} accesos.`;
+  }
+
+  // =========================
+  // 5. FUNCIONES VISUALES
+  // =========================
   function bloquearBotones() {
     if (btnSi) {
       btnSi.style.pointerEvents = 'none';
@@ -3188,50 +3216,66 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function marcarSeleccion(respuesta) {
-    if (btnSi && btnNo) {
-      if (respuesta === 'CONFIRMA') {
-        btnSi.style.outline = '2px solid rgba(255,255,255,0.8)';
-        btnNo.style.outline = 'none';
-      } else {
-        btnNo.style.outline = '2px solid rgba(255,255,255,0.8)';
-        btnSi.style.outline = 'none';
-      }
+    if (!btnSi || !btnNo) return;
+
+    if (respuesta === 'CONFIRMA') {
+      btnSi.style.outline = '2px solid rgba(255,255,255,0.8)';
+      btnNo.style.outline = 'none';
+    } else {
+      btnNo.style.outline = '2px solid rgba(255,255,255,0.8)';
+      btnSi.style.outline = 'none';
     }
   }
 
-  // Si ya votó antes
+  // =========================
+  // 6. SI YA VOTÓ ANTES
+  // =========================
   const yaVoto = localStorage.getItem(rsvpKey);
+
   if (yaVoto) {
     bloquearBotones();
     marcarSeleccion(yaVoto);
-    if (mensaje) {
-      mensaje.textContent =
+
+    if (mensajeEl) {
+      mensajeEl.textContent =
         yaVoto === 'CONFIRMA'
           ? 'Ya confirmaste tu asistencia 💛'
           : 'Ya registraste que no podrás asistir 💛';
     }
   }
 
-  // Botones
+  // =========================
+  // 7. EVENTOS DE BOTONES
+  // =========================
   btnSi?.addEventListener('click', () => enviarRespuesta('CONFIRMA'));
   btnNo?.addEventListener('click', () => enviarRespuesta('NO ASISTE'));
 
+  // =========================
+  // 8. ENVIAR RESPUESTA
+  // =========================
   function enviarRespuesta(respuesta) {
+    // Evitar doble envío
     if (localStorage.getItem(rsvpKey)) return;
 
+    // Guardar localmente
     localStorage.setItem(rsvpKey, respuesta);
     bloquearBotones();
     marcarSeleccion(respuesta);
 
+    // Enviar a Google Sheets
     fetch('https://script.google.com/macros/s/AKfycbzCVfQGCYCjQd41lPNXpE4zH_IbnfnAB8PsbG_o1-CBvX747mHan0OtQkiyYFjFLsaO/exec', {
       method: 'POST',
-      mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre, cupos, respuesta })
+      body: JSON.stringify({
+        nombre: nombre,
+        accesos: accesosValor,
+        respuesta: respuesta
+      })
     });
 
-    if (mensaje) {
-      mensaje.textContent =
+    // Mensaje al usuario
+    if (mensajeEl) {
+      mensajeEl.textContent =
         respuesta === 'CONFIRMA'
           ? 'Gracias por confirmar tu asistencia 💛'
           : 'Gracias por avisarnos 💛';
