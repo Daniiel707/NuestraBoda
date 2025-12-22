@@ -3157,6 +3157,51 @@ document.addEventListener("DOMContentLoaded", () => {
     history.pushState(null, "", "#confirmar-asistencia");
   });
 });
-</script>		
+</script>	
+
+						<script>
+  // Leer parámetros del link
+  const params = new URLSearchParams(window.location.search);
+  const nombre = params.get('nombre') || 'Invitado';
+  const cupos = params.get('cupos') || '1';
+
+  // Mostrar en la página
+  const saludo = document.getElementById('rsvp-saludo');
+  const accesos = document.getElementById('rsvp-accesos');
+
+  if (saludo) {
+    saludo.textContent = `Hola ${nombre},`;
+  }
+
+  if (accesos) {
+    accesos.textContent = `Tienes ${cupos} acceso(s) reservado(s).`;
+  }
+
+  // BOTONES
+  document.getElementById('btn-confirmar')?.addEventListener('click', () => {
+    enviarRespuesta('CONFIRMA');
+  });
+
+  document.getElementById('btn-no-asistir')?.addEventListener('click', () => {
+    enviarRespuesta('NO ASISTE');
+  });
+
+  function enviarRespuesta(respuesta) {
+    fetch('PEGAR_AQUI_URL_GOOGLE_SCRIPT', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nombre: nombre,
+        cupos: cupos,
+        respuesta: respuesta
+      })
+    });
+
+    document.getElementById('rsvp-mensaje').textContent =
+      respuesta === 'CONFIRMA'
+        ? 'Gracias por confirmar tu asistencia 💛'
+        : 'Gracias por avisarnos 💛';
+  }
+</script>
 </body>
 </html>
